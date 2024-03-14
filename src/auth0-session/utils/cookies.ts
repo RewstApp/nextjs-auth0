@@ -9,6 +9,11 @@ export abstract class Cookies {
   }
 
   set(name: string, value: string, options: CookieSerializeOptions = {}): void {
+    // if the cookie is set to "SameSite=None", change it to "SameSite=lax"
+    if (options.sameSite === 'none') {
+      options.sameSite = 'lax';
+    }
+
     this.cookies.push(serialize(name, value, options));
   }
 
