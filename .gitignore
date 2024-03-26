@@ -68,7 +68,6 @@ typings/
 .env.local
 
 # Distribution directories
-dist/
 .next
 
 # Mac OSX files
