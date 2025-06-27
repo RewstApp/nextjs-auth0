@@ -46,7 +46,8 @@
     "test:example-local": "npx start-server-and-test 'start:example-local' http://localhost:3000 'cypress run --config-file=./cypress-local.config.js'",
     "test:example-local:watch": "npx start-server-and-test 'start:example-local' http://localhost:3000 'cypress open --config-file=./cypress-local.config.js'",
     "cypress:run": "cypress run",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
