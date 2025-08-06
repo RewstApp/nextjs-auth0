@@ -1,5 +1,9 @@
 import * as jose from 'jose';
 import { CookieSerializeOptions, serialize } from 'cookie';
+
+interface ExtendedCookieOptions extends CookieSerializeOptions {
+  partitioned?: boolean;
+}
 import createDebug from '../utils/debug';
 import { Config } from '../config';
 import { encryption } from '../utils/hkdf';
@@ -31,7 +35,8 @@ export class StatelessSession<
         name: sessionName
       } = config.session;
       const cookieOptions: CookieSerializeOptions = {
-        ...cookieConfig
+        ...cookieConfig,
+        partitioned: true
       };
       if (!transient) {
         cookieOptions.expires = new Date();
@@ -116,7 +121,7 @@ export class StatelessSession<
     uat: number,
     iat: number,
     exp: number,
-    cookieOptions: CookieSerializeOptions
+    cookieOptions: ExtendedCookieOptions
   ): Promise<void> {
     const config = await this.getConfig(req);
     const { name: sessionName } = config.session;
@@ -154,7 +159,7 @@ export class StatelessSession<
   async deleteSession(
     req: Auth0RequestCookies,
     res: Auth0ResponseCookies,
-    cookieOptions: CookieSerializeOptions
+    cookieOptions: ExtendedCookieOptions
   ): Promise<void> {
     const config = await this.getConfig(req);
     const { name: sessionName } = config.session;

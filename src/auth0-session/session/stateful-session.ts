@@ -1,4 +1,8 @@
 import { CookieSerializeOptions } from 'cookie';
+
+interface ExtendedCookieOptions extends CookieSerializeOptions {
+  partitioned?: boolean;
+}
 import createDebug from '../utils/debug';
 import { AbstractSession, SessionPayload } from './abstract-session';
 import { generateCookieValue, getCookieValue } from '../utils/signed-cookies';
@@ -69,7 +73,7 @@ export class StatefulSession<
     uat: number,
     iat: number,
     exp: number,
-    cookieOptions: CookieSerializeOptions,
+    cookieOptions: ExtendedCookieOptions,
     isNewSession: boolean
   ): Promise<void> {
     const config = await this.getConfig(req);
@@ -103,7 +107,7 @@ export class StatefulSession<
   async deleteSession(
     req: Auth0RequestCookies,
     res: Auth0ResponseCookies,
-    cookieOptions: CookieSerializeOptions
+    cookieOptions: ExtendedCookieOptions
   ): Promise<void> {
     const config = await this.getConfig(req);
     const { name: sessionName } = config.session;

@@ -1,5 +1,9 @@
 import createDebug from '../utils/debug';
 import { CookieSerializeOptions } from 'cookie';
+
+interface ExtendedCookieOptions extends CookieSerializeOptions {
+  partitioned?: boolean;
+}
 import { Config, GetConfig } from '../config';
 import { Auth0RequestCookies, Auth0ResponseCookies } from '../http';
 
@@ -51,14 +55,14 @@ export abstract class AbstractSession<Session> {
     uat: number,
     iat: number,
     exp: number,
-    cookieOptions: CookieSerializeOptions,
+    cookieOptions: ExtendedCookieOptions,
     isNewSession: boolean
   ): Promise<void>;
 
   abstract deleteSession(
     req: Auth0RequestCookies,
     res: Auth0ResponseCookies,
-    cookieOptions: CookieSerializeOptions
+    cookieOptions: ExtendedCookieOptions
   ): Promise<void>;
 
   public async read(req: Auth0RequestCookies): Promise<[Session?, number?]> {
@@ -106,7 +110,7 @@ export abstract class AbstractSession<Session> {
     } = config.session;
 
     if (!session) {
-      await this.deleteSession(req, res, cookieConfig);
+      await this.deleteSession(req, res, { ...cookieConfig, partitioned: true });
       return;
     }
 
@@ -115,8 +119,9 @@ export abstract class AbstractSession<Session> {
     const iat = typeof createdAt === 'number' ? createdAt : uat;
     const exp = this.calculateExp(iat, uat, config);
 
-    const cookieOptions: CookieSerializeOptions = {
-      ...cookieConfig
+    const cookieOptions: ExtendedCookieOptions = {
+      ...cookieConfig,
+      partitioned: true
     };
     if (!transient) {
       cookieOptions.expires = new Date(exp * 1000);
