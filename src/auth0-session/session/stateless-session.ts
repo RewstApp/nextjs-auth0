@@ -31,7 +31,8 @@ export class StatelessSession<
         name: sessionName
       } = config.session;
       const cookieOptions: CookieSerializeOptions = {
-        ...cookieConfig
+        ...cookieConfig,
+        partitioned: true
       };
       if (!transient) {
         cookieOptions.expires = new Date();

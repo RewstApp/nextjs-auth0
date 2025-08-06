@@ -106,7 +106,7 @@ export abstract class AbstractSession<Session> {
     } = config.session;
 
     if (!session) {
-      await this.deleteSession(req, res, cookieConfig);
+      await this.deleteSession(req, res, { ...cookieConfig, partitioned: true });
       return;
     }
 
@@ -116,7 +116,8 @@ export abstract class AbstractSession<Session> {
     const exp = this.calculateExp(iat, uat, config);
 
     const cookieOptions: CookieSerializeOptions = {
-      ...cookieConfig
+      ...cookieConfig,
+      partitioned: true
     };
     if (!transient) {
       cookieOptions.expires = new Date(exp * 1000);

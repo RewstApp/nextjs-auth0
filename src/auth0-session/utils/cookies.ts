@@ -9,8 +9,7 @@ export abstract class Cookies {
   }
 
   set(name: string, value: string, options: CookieSerializeOptions = {}): void {
-    let cookieString = serialize(name, value, options);
-    cookieString += '; Partitioned';
+    const cookieString = serialize(name, value, options);
     this.cookies.push(cookieString);
   }
 
