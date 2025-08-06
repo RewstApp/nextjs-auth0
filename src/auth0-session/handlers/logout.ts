@@ -1,4 +1,4 @@
-const urlJoin = require('url-join');
+import urlJoin from 'url-join';
 import createDebug from '../utils/debug';
 import { GetConfig, LogoutOptions } from '../config';
 import { SessionCache } from '../session-cache';
@@ -13,40 +13,23 @@ export type HandleLogout = (req: Auth0Request, res: Auth0Response, options?: Log
  * Remove a cookie by creating a matching removal header with all possible attributes
  */
 function removeCookie(res: Auth0Response, cookieName: string, cookieConfig: any = {}) {
-  let cookieString = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  const clearOptions = {
+    path: cookieConfig.path || '/',
+    domain: cookieConfig.domain,
+    secure: cookieConfig.secure !== false,
+    httpOnly: cookieConfig.httpOnly !== false,
+    sameSite: cookieConfig.sameSite,
+    partitioned: cookieConfig.partitioned
+  };
 
-  // Add path (default to '/')
-  const path = cookieConfig.path || '/';
-  cookieString += `; Path=${path}`;
+  // Remove undefined values to avoid issues with cookie serialization
+  Object.keys(clearOptions).forEach(key => {
+    if (clearOptions[key as keyof typeof clearOptions] === undefined) {
+      delete clearOptions[key as keyof typeof clearOptions];
+    }
+  });
 
-  // Add domain if specified
-  if (cookieConfig.domain) {
-    cookieString += `; Domain=${cookieConfig.domain}`;
-  }
-
-  // Add security attributes to match original cookie
-  if (cookieConfig.secure !== false) {
-    cookieString += '; Secure';
-  }
-
-  if (cookieConfig.httpOnly !== false) {
-    cookieString += '; HttpOnly';
-  }
-
-  if (cookieConfig.sameSite) {
-    cookieString += `; SameSite=${cookieConfig.sameSite}`;
-  }
-
-  if (cookieConfig.partitioned) {
-    cookieString += '; Partitioned';
-  }
-
-  // Add to existing Set-Cookie headers
-  const existingCookies = res.res.getHeader('Set-Cookie') || [];
-  const cookieArray = Array.isArray(existingCookies) ? existingCookies : [existingCookies as string];
-  cookieArray.push(cookieString);
-
-  res.res.setHeader('Set-Cookie', cookieArray);
+  res.clearCookie(cookieName, clearOptions);
 }
 
 export default function logoutHandlerFactory(
