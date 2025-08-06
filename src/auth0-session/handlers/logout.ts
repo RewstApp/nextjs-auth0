@@ -1,4 +1,4 @@
-import urlJoin from 'url-join';
+const urlJoin = require('url-join');
 import createDebug from '../utils/debug';
 import { GetConfig, LogoutOptions } from '../config';
 import { SessionCache } from '../session-cache';
@@ -23,7 +23,7 @@ function removeCookie(res: Auth0Response, cookieName: string, cookieConfig: any 
   };
 
   // Remove undefined values to avoid issues with cookie serialization
-  Object.keys(clearOptions).forEach(key => {
+  Object.keys(clearOptions).forEach((key) => {
     if (clearOptions[key as keyof typeof clearOptions] === undefined) {
       delete clearOptions[key as keyof typeof clearOptions];
     }
@@ -66,14 +66,14 @@ export default function logoutHandlerFactory(
     const cookieName = config.session?.name || 'appSession';
 
     removeCookie(res, cookieName, config.session?.cookie);
-    
+
     // Also remove with partitioned flag to ensure cleanup regardless of original cookie config
     const cookieConfigWithPartitioned = {
       ...config.session?.cookie,
       partitioned: true
     };
     removeCookie(res, cookieName, cookieConfigWithPartitioned);
-    
+
     debug('session cookie cleared');
 
     if (!config.idpLogout) {
