@@ -1,4 +1,4 @@
-const urlJoin = require('url-join');
+import urlJoin from 'url-join';
 import createDebug from '../utils/debug';
 import { GetConfig, LogoutOptions } from '../config';
 import { SessionCache } from '../session-cache';
